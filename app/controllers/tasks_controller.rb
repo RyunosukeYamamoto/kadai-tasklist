@@ -1,13 +1,10 @@
 class TasksController < ApplicationController
   include SessionsHelper
-  before_action :correct_user, only: [:show, :edit, :update, :destroy]
+  before_action :require_user_logged_in
+  before_action :correct_user, only: [:update, :destroy]
   
   def index
-    if logged_in?
-      @tasks = current_user.tasks.order(id: :desc).page(params[:page])
-    else
-      redirect_to login_url
-    end
+    @tasks = current_user.tasks.order(id: :desc).page(params[:page])
   end
     
   def show
@@ -33,7 +30,6 @@ class TasksController < ApplicationController
   end
     
   def update
-    
     if @task.update(task_params)
       flash[:success] = 'タスクは正常に更新されました'
       redirect_to @task
